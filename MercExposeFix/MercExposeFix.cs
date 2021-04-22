@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace MercExposeFix
 {
-    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.1.0")]
+    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.1.1")]
     public class MercExposeFix : BaseUnityPlugin
     {
         public void Awake()
@@ -15,10 +15,14 @@ namespace MercExposeFix
             On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
             {
                 bool replaceExpose = false;
-                if (damageInfo.attacker && self.body.HasBuff(RoR2Content.Buffs.MercExpose))
+                if (damageInfo.procCoefficient > 0f && self.body.HasBuff(RoR2Content.Buffs.MercExpose))
                 {
-                    CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                    if (attackerBody && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody"))
+                    CharacterBody attackerBody = null;
+                    if (damageInfo.attacker)
+                    {
+                        attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                    }
+                    if (!damageInfo.attacker || (attackerBody && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
                     {
                         replaceExpose = true;
                         attackerBody.RemoveBuff(RoR2Content.Buffs.MercExpose);
