@@ -14,24 +14,19 @@ namespace MercExposeFix
         {
             On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
             {
-                bool replaceExpose = false;
-                if (damageInfo.procCoefficient > 0f && self.body.HasBuff(RoR2Content.Buffs.MercExpose))
+                bool hasExpose = self.body.HasBuff(RoR2Content.Buffs.MercExpose);
+                orig(self, damageInfo);
+                if (hasExpose && !self.body.HasBuff(RoR2Content.Buffs.MercExpose))
                 {
                     CharacterBody attackerBody = null;
                     if (damageInfo.attacker)
                     {
                         attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
                     }
-                    if (!damageInfo.attacker || (attackerBody && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
+                    if (!damageInfo.attacker || attackerBody == null || (attackerBody != null && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
                     {
-                        replaceExpose = true;
-                        attackerBody.RemoveBuff(RoR2Content.Buffs.MercExpose);
+                        attackerBody.AddBuff(RoR2Content.Buffs.MercExpose);
                     }
-                }
-                orig(self, damageInfo);
-                if (replaceExpose)
-                {
-                    self.body.AddBuff(RoR2Content.Buffs.MercExpose);
                 }
             };
         }
