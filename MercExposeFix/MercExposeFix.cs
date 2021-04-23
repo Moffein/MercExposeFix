@@ -23,7 +23,7 @@ namespace MercExposeFix
                     {
                         attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
                     }
-                    if (!damageInfo.attacker || attackerBody == null || (attackerBody != null && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
+                    if (!damageInfo.attacker || !attackerBody || (attackerBody && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
                     {
                         attackerBody.AddBuff(RoR2Content.Buffs.MercExpose);
                     }
