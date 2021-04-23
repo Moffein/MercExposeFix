@@ -14,7 +14,7 @@ namespace MercExposeFix
         {
             On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
             {
-                bool hasExpose = self.body.HasBuff(RoR2Content.Buffs.MercExpose);
+                bool hasExpose = NetworkServer.active && self.body.HasBuff(RoR2Content.Buffs.MercExpose);
                 orig(self, damageInfo);
                 if (hasExpose && !self.body.HasBuff(RoR2Content.Buffs.MercExpose))
                 {
