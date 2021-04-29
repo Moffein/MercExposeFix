@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace MercExposeFix
 {
-    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.1.1")]
+    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.1.2")]
     public class MercExposeFix : BaseUnityPlugin
     {
         public void Awake()
@@ -25,7 +25,7 @@ namespace MercExposeFix
                     }
                     if (!damageInfo.attacker || !attackerBody || (attackerBody && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
                     {
-                        attackerBody.AddBuff(RoR2Content.Buffs.MercExpose);
+                        self.body.AddBuff(RoR2Content.Buffs.MercExpose);
                     }
                 }
             };
