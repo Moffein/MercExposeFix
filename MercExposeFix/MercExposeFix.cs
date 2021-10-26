@@ -1,42 +1,46 @@
 ﻿using BepInEx;
+using MonoMod.Cil;
 using RoR2;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using R2API.Utils;
+using Mono.Cecil.Cil;
 
 namespace MercExposeFix
 {
-    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.1.2")]
+    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.2.0")]
+    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
     public class MercExposeFix : BaseUnityPlugin
     {
+        public static BuffDef emptyBuff = null;
         public void Awake()
         {
-            On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
+            IL.RoR2.HealthComponent.TakeDamage += (il) =>
             {
-                bool hasExpose = NetworkServer.active && self.body.HasBuff(RoR2Content.Buffs.MercExpose);
-                orig(self, damageInfo);
-                if (hasExpose && !self.body.HasBuff(RoR2Content.Buffs.MercExpose))
-                {
-                    CharacterBody attackerBody = null;
-                    if (damageInfo.attacker)
-                    {
-                        attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                    }
-                    if (!damageInfo.attacker || !attackerBody || (attackerBody && attackerBody.bodyIndex != BodyCatalog.FindBodyIndex("MercBody")))
-                    {
-                        self.body.AddBuff(RoR2Content.Buffs.MercExpose);
-                    }
-                }
-            };
-        }
-    }
-}
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "MercExpose"),
+                     x => x.MatchCallvirt<CharacterBody>("RemoveBuff")
+                    );
+                c.Remove();
+                c.Emit<MercExposeFix>(OpCodes.Ldsfld, nameof(MercExposeFix.emptyBuff));
 
-namespace R2API.Utils
-{
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public class ManualNetworkRegistrationAttribute : Attribute
-    {
+                //Remove buff when it is confirmed that it's Merc attacking.
+               c.GotoNext(
+                     x => x.MatchCallvirt<CharacterBody>("get_damage")
+                    );
+                
+                c.Emit(OpCodes.Ldarg_0);//victim healthcomponent
+                c.EmitDelegate<Func<CharacterBody, HealthComponent, CharacterBody>>((body, victimHealth) =>
+                {
+                    if(victimHealth.body)
+                    {
+                        victimHealth.body.RemoveBuff(RoR2Content.Buffs.MercExpose);
+                    }
+                    return body;
+                });
+            };
+
+        }
     }
 }

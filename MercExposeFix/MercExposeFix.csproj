@@ -59,6 +59,9 @@
     <Reference Include="R2API">
       <HintPath>..\..\Risky_Rebalance\Risky_Rebalance\libs\R2API.dll</HintPath>
     </Reference>
+    <Reference Include="SimpleJSON">
+      <HintPath>libs\SimpleJSON.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\..\Risky_Rebalance\Risky_Rebalance\libs\Unity.TextMeshPro.dll</HintPath>
     </Reference>
