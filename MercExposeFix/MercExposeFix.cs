@@ -3,13 +3,11 @@ using MonoMod.Cil;
 using RoR2;
 using System;
 using UnityEngine;
-using R2API.Utils;
 using Mono.Cecil.Cil;
 
 namespace MercExposeFix
 {
-    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.2.0")]
-    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
+    [BepInPlugin("com.Moffein.MercExposeFix", "Merc Expose Fix", "1.2.1")]
     public class MercExposeFix : BaseUnityPlugin
     {
         public static BuffDef emptyBuff = null;
